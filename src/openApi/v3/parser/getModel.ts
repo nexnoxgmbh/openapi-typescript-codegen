@@ -2,7 +2,7 @@ import type { Model } from '../../../client/interfaces/Model';
 import { getPattern } from '../../../utils/getPattern';
 import type { OpenApi } from '../interfaces/OpenApi';
 import type { OpenApiSchema } from '../interfaces/OpenApiSchema';
-import { extendEnum } from './extendEnum';
+import { extendEnum, extendMsEnum } from './extendEnum';
 import { getEnum } from './getEnum';
 import { getModelComposition } from './getModelComposition';
 import { getModelDefault } from './getModelDefault';
@@ -61,6 +61,17 @@ export const getModel = (
 
     if (definition.enum && definition.type !== 'boolean') {
         const enumerators = getEnum(definition.enum);
+
+        const extendedMsEnumerators = extendMsEnum(enumerators, definition);
+        if (extendedMsEnumerators.length) {
+            model.export = 'enum';
+            model.type = 'string';
+            model.base = 'string';
+            model.enum.push(...extendedMsEnumerators);
+            model.default = getModelDefault(definition, model);
+            return model;
+        }
+
         const extendedEnumerators = extendEnum(enumerators, definition);
         if (extendedEnumerators.length) {
             model.export = 'enum';

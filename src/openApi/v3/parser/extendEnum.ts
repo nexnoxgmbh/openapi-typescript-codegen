@@ -1,3 +1,4 @@
+
 import type { Enum } from '../../../client/interfaces/Enum';
 import { isString } from '../../../utils/isString';
 import type { WithEnumExtension } from '../interfaces/Extensions/WithEnumExtension';
@@ -19,3 +20,15 @@ export const extendEnum = (enumerators: Enum[], definition: WithEnumExtension): 
         type: enumerator.type,
     }));
 };
+
+export const extendMsEnum = (enumerators: Enum[], definition: WithEnumExtension): Enum[] => {
+    const names = definition['x-ms-enum']?.values || [];
+
+    return enumerators.map((enumerator, index) => ({
+        name: names?.find(x => `'${x.value}'` === enumerator.value)?.name || enumerator.name,
+        description: enumerator.description,
+        value: names?.find(x => `'${x.value}'` === enumerator.value)?.value || enumerator.value,
+        type: enumerator.type,
+    }));
+};
+

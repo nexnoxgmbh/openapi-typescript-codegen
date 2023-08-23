@@ -18,6 +18,8 @@ export const getModelProperties = (
 ): Model[] => {
     const models: Model[] = [];
     const discriminator = findOneOfParentDiscriminator(openApi, parent);
+    const propertyNameFilter = (raw: string) => raw.replace(/^(.+?)(\[.+\])?$/, '$1');
+
     for (const propertyName in definition.properties) {
         if (definition.properties.hasOwnProperty(propertyName)) {
             const property = definition.properties[propertyName];
@@ -35,7 +37,7 @@ export const getModelProperties = (
                 | 'enums'
                 | 'properties'
             > = {
-                name: escapeName(propertyName),
+                name: escapeName(propertyNameFilter(propertyName)),
                 description: property.description || null,
                 deprecated: property.deprecated === true,
                 isDefinition: false,
